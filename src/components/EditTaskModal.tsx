@@ -3,6 +3,7 @@ import apiClient from "../services/api";
 import type { Task, TaskUpdate } from "../types";
 import "./EditTaskModal.css";
 import { useTags } from "../hooks/useTags";
+import Select from "react-select";
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -39,16 +40,7 @@ const EditTaskModal = ({
     });
   };
 
-  const handleTagChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setFormData({
-      ...formData,
-      tags: selected,
-    });
-  };
+  const tagOptions = tags.map((tag) => ({ value: tag.name, label: tag.name }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,20 +121,35 @@ const EditTaskModal = ({
           </div>
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
-            <select
+            <Select
               id="tags"
               name="tags"
-              multiple
-              value={formData.tags || []}
-              onChange={handleTagChange}
-              disabled={tagsLoading}
-            >
-              {tags.map((tag) => (
-                <option key={tag.id} value={tag.name}>
-                  {tag.name}
-                </option>
-              ))}
-            </select>
+              isMulti
+              options={tagOptions}
+              value={tagOptions.filter((opt) =>
+                formData.tags?.includes(opt.value)
+              )}
+              onChange={(selected) =>
+                setFormData({
+                  ...formData,
+                  tags: selected ? selected.map((opt) => opt.value) : [],
+                })
+              }
+              isLoading={tagsLoading}
+              classNamePrefix="react-select"
+              placeholder="Select tags..."
+            />
+            <div className="selected-tags">
+              {formData.tags && formData.tags.length > 0 ? (
+                formData.tags.map((tag) => (
+                  <span className="selected-tag" key={tag}>
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="selected-tag none">No tags selected</span>
+              )}
+            </div>
           </div>
           {error && <p className="error">{error}</p>}
           <div className="modal-actions">

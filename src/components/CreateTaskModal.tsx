@@ -3,6 +3,7 @@ import apiClient from "../services/api";
 import type { TaskCreate, Project } from "../types";
 import "./CreateTaskModal.css";
 import { useTags } from "../hooks/useTags";
+import Select from "react-select";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -23,6 +24,9 @@ const CreateTaskModal = ({
     description: "",
     project_id: projects.length > 0 ? projects[0].id : undefined,
     tags: [],
+    status: "pending",
+    priority: "medium",
+    due_date: "",
   });
   const [error, setError] = useState("");
 
@@ -37,16 +41,7 @@ const CreateTaskModal = ({
     });
   };
 
-  const handleTagChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setFormData({
-      ...formData,
-      tags: selected,
-    });
-  };
+  const tagOptions = tags.map((tag) => ({ value: tag.name, label: tag.name }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,20 +102,24 @@ const CreateTaskModal = ({
           </div>
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
-            <select
+            <Select
               id="tags"
               name="tags"
-              multiple
-              value={formData.tags || []}
-              onChange={handleTagChange}
-              disabled={tagsLoading}
-            >
-              {tags.map((tag) => (
-                <option key={tag.id} value={tag.name}>
-                  {tag.name}
-                </option>
-              ))}
-            </select>
+              isMulti
+              options={tagOptions}
+              value={tagOptions.filter((opt) =>
+                formData.tags?.includes(opt.value)
+              )}
+              onChange={(selected) =>
+                setFormData({
+                  ...formData,
+                  tags: selected ? selected.map((opt) => opt.value) : [],
+                })
+              }
+              isLoading={tagsLoading}
+              classNamePrefix="react-select"
+              placeholder="Select tags..."
+            />
             {/* Visualización de tags seleccionadas */}
             <div className="selected-tags">
               {formData.tags && formData.tags.length > 0 ? (
@@ -133,6 +132,44 @@ const CreateTaskModal = ({
                 <span className="selected-tag none">No tags selected</span>
               )}
             </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="status">Status</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              required
+            >
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="priority">Priority</label>
+            <select
+              id="priority"
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              required
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="due_date">Due Date</label>
+            <input
+              id="due_date"
+              name="due_date"
+              type="date"
+              value={formData.due_date ? formData.due_date.slice(0, 10) : ""}
+              onChange={handleChange}
+            />
           </div>
           {error && <p className="error">{error}</p>}
           <div className="modal-actions">
