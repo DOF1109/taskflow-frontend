@@ -1,0 +1,78 @@
+.tag-manager {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  max-width: 400px;
+  margin: 2rem auto;
+}
+.tag-manager h2 {
+  margin-bottom: 1rem;
+  color: #1976d2;
+}
+.tag-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.tag-form input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.tag-form input[type="color"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.tag-form button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tag-form button:disabled {
+  background: #90caf9;
+  cursor: not-allowed;
+}
+.error {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+.tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tag-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.tag-list li span {
+  font-weight: 500;
+}
+.tag-list li button {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tag-list li button:disabled {
+  background: #ffcdd2;
+  cursor: not-allowed;
+}

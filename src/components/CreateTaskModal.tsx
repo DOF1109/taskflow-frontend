@@ -2,6 +2,7 @@ import { useState } from "react";
 import apiClient from "../services/api";
 import type { TaskCreate, Project } from "../types";
 import "./CreateTaskModal.css";
+import { useTags } from "../hooks/useTags";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -16,10 +17,12 @@ const CreateTaskModal = ({
   onTaskCreated,
   projects,
 }: CreateTaskModalProps) => {
+  const { tags, loading: tagsLoading } = useTags();
   const [formData, setFormData] = useState<TaskCreate>({
     title: "",
     description: "",
     project_id: projects.length > 0 ? projects[0].id : undefined,
+    tags: [],
   });
   const [error, setError] = useState("");
 
@@ -31,6 +34,17 @@ const CreateTaskModal = ({
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleTagChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setFormData({
+      ...formData,
+      tags: selected,
     });
   };
 
@@ -91,6 +105,23 @@ const CreateTaskModal = ({
               onChange={handleChange}
             />
           </div>
+          <div className="form-group">
+            <label htmlFor="tags">Tags</label>
+            <select
+              id="tags"
+              name="tags"
+              multiple
+              value={formData.tags || []}
+              onChange={handleTagChange}
+              disabled={tagsLoading}
+            >
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.name}>
+                  {tag.name}
+                </option>
+              ))}
+            </select>
+          </div>
           {error && <p className="error">{error}</p>}
           <div className="modal-actions">
             <button type="button" onClick={onClose}>
@@ -104,4 +135,4 @@ const CreateTaskModal = ({
   );
 };
 
-export default CreateTaskModal; 
+export default CreateTaskModal;
