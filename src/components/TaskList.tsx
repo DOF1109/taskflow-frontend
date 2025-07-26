@@ -42,6 +42,20 @@ const TaskList = () => {
                   : "N/A"}
               </span>
             </div>
+            <div className="task-tags">
+              {task.tags && task.tags.length > 0 ? (
+                task.tags.map((tag) => (
+                  <span
+                    className="task-tag"
+                    key={typeof tag === "string" ? tag : tag.id}
+                  >
+                    {typeof tag === "string" ? tag : tag.name}
+                  </span>
+                ))
+              ) : (
+                <span className="task-tag none">No tags</span>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -49,4 +63,4 @@ const TaskList = () => {
   );
 };
 
-export default TaskList; 
+export default TaskList;

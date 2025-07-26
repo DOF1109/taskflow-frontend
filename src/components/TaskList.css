@@ -38,4 +38,25 @@
   margin-top: 1rem;
   font-size: 0.875rem;
   color: #64748b;
-} 
+}
+
+.task-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.task-tag {
+  background: #00bcd4;
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.task-tag.none {
+  background: #e2e8f0;
+  color: #888;
+}

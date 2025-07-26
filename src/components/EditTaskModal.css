@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -22,6 +23,26 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
 .modal-actions {
@@ -44,23 +65,7 @@
   background-color: #cbd5e1;
 }
 
-.selected-tags {
+.error {
+  color: #e53e3e;
   margin-top: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.selected-tag {
-  background: #00bcd4;
-  color: #fff;
-  border-radius: 12px;
-  padding: 0.2rem 0.8rem;
-  font-size: 0.9rem;
-  display: inline-block;
-}
-
-.selected-tag.none {
-  background: #e2e8f0;
-  color: #888;
 }

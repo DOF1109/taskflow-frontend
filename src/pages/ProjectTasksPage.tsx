@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import apiClient from "../services/api";
 import type { Project, Task } from "../types";
 import CreateTaskModal from "../components/CreateTaskModal";
+import EditTaskModal from "../components/EditTaskModal";
 import "./ProjectTasksPage.css";
 
 const ProjectTasksPage = () => {
@@ -13,6 +14,7 @@ const ProjectTasksPage = () => {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTasks, setRefreshTasks] = useState(false);
+  const [editTask, setEditTask] = useState<Task | null>(null);
 
   useEffect(() => {
     const fetchProjectAndTasks = async () => {
@@ -66,6 +68,23 @@ const ProjectTasksPage = () => {
                     : "N/A"}
                 </span>
               </div>
+              <div className="task-tags">
+                {task.tags && task.tags.length > 0 ? (
+                  task.tags.map((tag) => (
+                    <span
+                      className="task-tag"
+                      key={typeof tag === "string" ? tag : tag.id}
+                    >
+                      {typeof tag === "string" ? tag : tag.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="task-tag none">No tags</span>
+                )}
+              </div>
+              <button className="edit-btn" onClick={() => setEditTask(task)}>
+                Edit
+              </button>
             </div>
           ))}
         </div>
@@ -78,8 +97,16 @@ const ProjectTasksPage = () => {
           projects={[project]}
         />
       )}
+      {editTask && (
+        <EditTaskModal
+          isOpen={!!editTask}
+          onClose={() => setEditTask(null)}
+          task={editTask}
+          onTaskUpdated={handleTaskCreated}
+        />
+      )}
     </div>
   );
 };
 
-export default ProjectTasksPage; 
+export default ProjectTasksPage;

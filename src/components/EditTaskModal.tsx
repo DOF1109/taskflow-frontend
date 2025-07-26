@@ -1,28 +1,30 @@
 import { useState } from "react";
 import apiClient from "../services/api";
-import type { TaskCreate, Project } from "../types";
-import "./CreateTaskModal.css";
+import type { Task, TaskUpdate } from "../types";
+import "./EditTaskModal.css";
 import { useTags } from "../hooks/useTags";
 
-interface CreateTaskModalProps {
+interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTaskCreated: () => void;
-  projects: Project[];
+  task: Task;
+  onTaskUpdated: () => void;
 }
 
-const CreateTaskModal = ({
+const EditTaskModal = ({
   isOpen,
   onClose,
-  onTaskCreated,
-  projects,
-}: CreateTaskModalProps) => {
+  task,
+  onTaskUpdated,
+}: EditTaskModalProps) => {
   const { tags, loading: tagsLoading } = useTags();
-  const [formData, setFormData] = useState<TaskCreate>({
-    title: "",
-    description: "",
-    project_id: projects.length > 0 ? projects[0].id : undefined,
-    tags: [],
+  const [formData, setFormData] = useState<TaskUpdate>({
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    due_date: task.due_date,
+    tags: task.tags.map((t) => (typeof t === "string" ? t : t.name)),
   });
   const [error, setError] = useState("");
 
@@ -51,41 +53,23 @@ const CreateTaskModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiClient.post("/tasks/", formData);
-      onTaskCreated();
+      await apiClient.put(`/tasks/${task.id}`, formData);
+      onTaskUpdated();
       onClose();
     } catch {
-      setError("Failed to create task. Please try again.");
+      setError("Failed to update task. Please try again.");
     }
   };
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Create a new task</h2>
+        <h2>Edit Task</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="project_id">Project</label>
-            <select
-              id="project_id"
-              name="project_id"
-              value={formData.project_id}
-              onChange={handleChange}
-              required
-            >
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="title">Task title</label>
+            <label htmlFor="title">Title</label>
             <input
               id="title"
               name="title"
@@ -106,6 +90,44 @@ const CreateTaskModal = ({
             />
           </div>
           <div className="form-group">
+            <label htmlFor="status">Status</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              required
+            >
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="priority">Priority</label>
+            <select
+              id="priority"
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              required
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="due_date">Due Date</label>
+            <input
+              id="due_date"
+              name="due_date"
+              type="date"
+              value={formData.due_date ? formData.due_date.slice(0, 10) : ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
             <label htmlFor="tags">Tags</label>
             <select
               id="tags"
@@ -121,25 +143,13 @@ const CreateTaskModal = ({
                 </option>
               ))}
             </select>
-            {/* Visualización de tags seleccionadas */}
-            <div className="selected-tags">
-              {formData.tags && formData.tags.length > 0 ? (
-                formData.tags.map((tag) => (
-                  <span className="selected-tag" key={tag}>
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="selected-tag none">No tags selected</span>
-              )}
-            </div>
           </div>
           {error && <p className="error">{error}</p>}
           <div className="modal-actions">
             <button type="button" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit">Create</button>
+            <button type="submit">Save</button>
           </div>
         </form>
       </div>
@@ -147,4 +157,4 @@ const CreateTaskModal = ({
   );
 };
 
-export default CreateTaskModal;
+export default EditTaskModal;
