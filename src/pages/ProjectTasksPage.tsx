@@ -4,6 +4,7 @@ import apiClient from "../services/api";
 import type { Project, Task } from "../types";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
+import ConfirmModal from "../components/ConfirmModal";
 import "./ProjectTasksPage.css";
 
 const ProjectTasksPage = () => {
@@ -15,6 +16,7 @@ const ProjectTasksPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTasks, setRefreshTasks] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
+  const [deleteTask, setDeleteTask] = useState<Task | null>(null);
 
   useEffect(() => {
     const fetchProjectAndTasks = async () => {
@@ -37,6 +39,17 @@ const ProjectTasksPage = () => {
 
   const handleTaskCreated = () => {
     setRefreshTasks((prev) => !prev);
+  };
+
+  const handleDeleteTask = async () => {
+    if (!deleteTask) return;
+    try {
+      await apiClient.delete(`/tasks/${deleteTask.id}`);
+      setDeleteTask(null);
+      setRefreshTasks((prev) => !prev);
+    } catch {
+      // Manejo de error opcional
+    }
   };
 
   if (loading) {
@@ -85,6 +98,12 @@ const ProjectTasksPage = () => {
               <button className="edit-btn" onClick={() => setEditTask(task)}>
                 Edit
               </button>
+              <button
+                className="delete-btn"
+                onClick={() => setDeleteTask(task)}
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>
@@ -105,6 +124,13 @@ const ProjectTasksPage = () => {
           onTaskUpdated={handleTaskCreated}
         />
       )}
+      <ConfirmModal
+        isOpen={!!deleteTask}
+        title="Confirmar eliminación"
+        message={`¿Seguro que deseas eliminar la tarea "${deleteTask?.title}"?`}
+        onConfirm={handleDeleteTask}
+        onCancel={() => setDeleteTask(null)}
+      />
     </div>
   );
 };

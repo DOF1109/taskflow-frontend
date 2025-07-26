@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./TagManager.css";
 import { api } from "../services/api";
+import ConfirmModal from "./ConfirmModal";
 
 export interface Tag {
   id: number;
@@ -12,6 +13,7 @@ const TagManager: React.FC = () => {
   const [newTag, setNewTag] = useState({ name: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
 
   const fetchTags = async () => {
     setLoading(true);
@@ -82,12 +84,22 @@ const TagManager: React.FC = () => {
         {tags.map((tag) => (
           <li key={tag.id}>
             <span>{tag.name}</span>
-            <button onClick={() => handleDeleteTag(tag.id)} disabled={loading}>
+            <button onClick={() => setTagToDelete(tag)} disabled={loading}>
               Eliminar
             </button>
           </li>
         ))}
       </ul>
+      <ConfirmModal
+        isOpen={!!tagToDelete}
+        title="Confirmar eliminación"
+        message={`¿Seguro que deseas eliminar la etiqueta "${tagToDelete?.name}"?`}
+        onConfirm={() => {
+          if (tagToDelete) handleDeleteTag(tagToDelete.id);
+          setTagToDelete(null);
+        }}
+        onCancel={() => setTagToDelete(null)}
+      />
     </div>
   );
 };

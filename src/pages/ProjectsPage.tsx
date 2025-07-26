@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import apiClient from "../services/api";
 import type { Project } from "../types";
 import CreateProjectModal from "../components/CreateProjectModal";
+import ConfirmModal from "../components/ConfirmModal";
 import "./ProjectsPage.css";
 
 const ProjectsPage = () => {
@@ -11,6 +12,7 @@ const ProjectsPage = () => {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshProjects, setRefreshProjects] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -31,6 +33,19 @@ const ProjectsPage = () => {
     setRefreshProjects((prev) => !prev);
   };
 
+  const handleDeleteProject = async (id: number) => {
+    setLoading(true);
+    setError("");
+    try {
+      await apiClient.delete(`/projects/${id}`);
+      setProjects(projects.filter((p) => p.id !== id));
+    } catch {
+      setError("No se pudo eliminar el proyecto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="projects-page">
       <div className="container">
@@ -46,6 +61,12 @@ const ProjectsPage = () => {
               <h4>{project.name}</h4>
               <p>{project.description}</p>
               <Link to={`/projects/${project.id}/tasks`}>View Tasks</Link>
+              <button
+                className="delete-btn"
+                onClick={() => setProjectToDelete(project)}
+              >
+                Eliminar
+              </button>
             </div>
           ))}
         </div>
@@ -55,8 +76,18 @@ const ProjectsPage = () => {
         onClose={() => setIsModalOpen(false)}
         onProjectCreated={handleProjectCreated}
       />
+      <ConfirmModal
+        isOpen={!!projectToDelete}
+        title="Confirmar eliminación"
+        message={`¿Seguro que deseas eliminar el proyecto "${projectToDelete?.name}"?`}
+        onConfirm={() => {
+          if (projectToDelete) handleDeleteProject(projectToDelete.id);
+          setProjectToDelete(null);
+        }}
+        onCancel={() => setProjectToDelete(null)}
+      />
     </div>
   );
 };
 
-export default ProjectsPage; 
+export default ProjectsPage;
